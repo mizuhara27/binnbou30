@@ -1,5 +1,4 @@
 import json
-json_path="musics.json"
 
 def load_music_data_from_json(json_file_path):
     with open(json_file_path, 'r', encoding='utf-8') as f:
@@ -27,11 +26,11 @@ def calculate_rating(constant, score):
     else:
         return 0
 
-def get_difficulty_value(music_id, music_data):
+def get_difficulty_name_value(music_id, music_data):
     music_id = str(music_id)
     for music_entry in music_data:
         if music_entry['id'] == music_id:
-            return music_entry['difficulties']
+            return music_entry['difficulties'],music_entry['name'],music_entry['jaketFile']
     return None
 
 def convert_level_to_difficulty(level):

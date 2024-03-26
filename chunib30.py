@@ -1,9 +1,9 @@
 import sqlite3
-from calculate_rating import calculate_rating,get_difficulty_value,load_music_data_from_json,convert_level_to_difficulty
+from calculate_rating import calculate_rating,get_difficulty_name_value,load_music_data_from_json,convert_level_to_difficulty
 
 # 指定数据库文件和定数表的路径
-db_file_path = ''
-json_path="musics.json"
+db_file_path = 'F:/rinsama-aqua/rinsama-aqua/data/db.sqlite'
+json_path="test.json"
 # 连接到数据库文件
 conn = sqlite3.connect(db_file_path)
 
@@ -20,12 +20,12 @@ music_data = load_music_data_from_json(json_path)
 for row in rows:
     music_id, score_max,level,is_all_justice,is_full_combo = row
     """获取定数"""
-    difficulty_data=get_difficulty_value(music_id, music_data)
+    difficulty_data,music_name,jacket=get_difficulty_name_value(music_id, music_data)
     difficulte=convert_level_to_difficulty(level)
     constant=difficulty_data.get(difficulte, None)
     """获取单曲rating"""
     rating_value = calculate_rating(constant, score_max)
-    rating_list.append({'music_id': music_id, 'score_max': score_max, 'rating': rating_value,'level':level,'constant':constant,'is_all_justice':is_all_justice,'is_full_combo':is_full_combo})
+    rating_list.append({'music_id': music_id, 'score_max': score_max, 'rating': rating_value,'level':level,'constant':constant,'is_all_justice':is_all_justice,'is_full_combo':is_full_combo,'music_name':music_name,'jacket':jacket})
     """取rating最高的30首乐曲"""
 sorted_rating_list = sorted(rating_list, key=lambda x: x['rating'], reverse=True)
 top_30_ratings = sorted_rating_list[:30]
@@ -34,12 +34,8 @@ for item in top_30_ratings:
     item['rating'] = round(item['rating'], 2)
 count=1
 for rating_item in top_30_ratings:
-    music_id=rating_item['music_id']
-    music_id = str(music_id)
+    music_name=rating_item['music_name']
     difficulte=convert_level_to_difficulty(rating_item['level'])
-    for music_entry in music_data:
-        if music_entry['id'] == music_id:
-            music_name=music_entry['name']
     rating = str(round(rating_item['rating'], 2))  # 将评分转换为字符串并保留两位小数
     score_max = str(rating_item['score_max'])
     constant=str(rating_item['constant'])
